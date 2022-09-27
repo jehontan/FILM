@@ -1,5 +1,5 @@
 #FROM nvidia/cudagl:10.1-devel-ubuntu16.04
-FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
+FROM nvidia/cuda:11.3.1-cudnn8-devel-ubuntu16.04
 
 # Setup basic packages
 RUN apt-get update
@@ -53,11 +53,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 RUN apt-get install -y  --no-install-recommends mesa-utils && rm -rf /var/lib/apt/lists/* 
     
 # Install conda
-RUN wget -O $HOME/miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh  &&\
+RUN wget -O $HOME/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh  &&\
     chmod +x ~/miniconda.sh &&\
     ~/miniconda.sh -b -p /custom/conda &&\
     rm ~/miniconda.sh &&\
-    /custom/conda/bin/conda install numpy pyyaml scipy ipython mkl mkl-include &&\
+    /custom/conda/bin/conda install numpy==1.20.2 pyyaml scipy==1.6.2 ipython mkl mkl-include &&\
     /custom/conda/bin/conda clean -ya
 ENV PATH /custom/conda/bin:$PATH
 
@@ -83,12 +83,12 @@ ENV MAGNUM_LOG="quiet"
 
 # Install project specific packages
 RUN /bin/bash -c "apt-get update; apt-get install -y libsm6 libxext6 libxrender-dev; pip install opencv-python"
-RUN /bin/bash -c "pip install --upgrade cython numpy"
+RUN /bin/bash -c "pip install cython==0.29.23 numpy==1.20.2"
 RUN /bin/bash -c "pip install matplotlib seaborn==0.9.0 scikit-fmm==2019.1.30 scikit-image==0.15.0 imageio==2.6.0 scikit-learn==0.22.2.post1 ifcfg"
 
 # Install pytorch and torch_scatter
-RUN conda install pytorch=1.6.0 torchvision=0.7.0 cudatoolkit=10.2 -c pytorch
-RUN /bin/bash -c "pip install torch_scatter"
+RUN conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=11.3 -c pytorch
+RUN /bin/bash -c "pip install torch_scatter==2.0.5"
 
 # Install detectron2
 RUN /bin/bash -c "python -m pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu102/torch1.6/index.html"
